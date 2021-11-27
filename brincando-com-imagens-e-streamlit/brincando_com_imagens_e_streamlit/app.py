@@ -104,21 +104,6 @@ if uploaded_file is not None:
     # image_aux_arr.astype(int)
     # st.write(image_aux_arr.astype)
     st.image(image_aux)
-
-
-    else(option == 'Transformação em (log)'):
-        
-        c = st.sidebar.slider('c', 0, 130, 25)
-        if color == 'tons de cinza':
-            log_image_arr = c * (np.log(gray_arr + 1))
-            image = Image.fromarray(log_image_arr).convert('L')
-            # image = Image.fromarray(255 - gray_arr).convert('L') 
-        else:
-            image[:,:,0] = c * (np.log(image[:,:,0] + 1))
-            image[:,:,1] = c * (np.log(image[:,:,1] + 1))
-            image[:,:,2] = c * (np.log(image[:,:,2] + 1))
-            image = Image.fromarray(image).convert('L')
-
     image_aux
     option = st.sidebar.selectbox(
         'Qual o nível de cores?',
@@ -126,23 +111,58 @@ if uploaded_file is not None:
     )
 
     image_aux = np.copy(image_gray_corr)
-    if option == 2:
-        image_aux[image_aux > 127] = 255
-        image_aux[image_aux < 127] = 0
-    elif option == 4:
-        image_aux[image_aux > 191] = 192
-        image_aux[(image_aux > 127) & (image_aux < 192)] = 128
-        image_aux[(image_aux > 63) & (image_aux < 128)] = 64
-        image_aux[image_aux < 64] = 0
-    elif option == 8:
-        image_aux[image_aux > 223] = 255
-        image_aux[(image_aux > 191) & (image_aux < 224)] = 192
-        image_aux[(image_aux > 159) & (image_aux < 192)] = 160
-        image_aux[(image_aux > 127) & (image_aux < 160)] = 128
-        image_aux[(image_aux > 95) & (image_aux < 128)] = 96
-        image_aux[(image_aux > 63) & (image_aux < 96)] = 64
-        image_aux[(image_aux > 31) & (image_aux < 64)] = 32
-        image_aux[image_aux < 32] = 0
+
+    def canalCores(canal, imagem_valor):
+        valor_cor = (256 / canal)
+        print(valor_cor)
+        print(f'color: {canal}')
+        for i in range(canal):
+            if i == 0:
+                imagem_valor[imagem_valor <= valor_cor] = 0
+            elif i == canal - 1:
+                imagem_valor[imagem_valor >= (valor_cor * i)] = 255
+            else:
+                imagem_valor[(imagem_valor > ((i * valor_cor) - 1)) & (imagem_valor < ((i + 1) * valor_cor))] = valor_cor * i
+
+    canalCores(option, image_aux)
+
+    # else(option == 'Transformação em (log)'):
+        
+    #     c = st.sidebar.slider('c', 0, 130, 25)
+    #     if color == 'tons de cinza':
+    #         log_image_arr = c * (np.log(gray_arr + 1))
+    #         image = Image.fromarray(log_image_arr).convert('L')
+    #         # image = Image.fromarray(255 - gray_arr).convert('L') 
+    #     else:
+    #         image[:,:,0] = c * (np.log(image[:,:,0] + 1))
+    #         image[:,:,1] = c * (np.log(image[:,:,1] + 1))
+    #         image[:,:,2] = c * (np.log(image[:,:,2] + 1))
+    #         image = Image.fromarray(image).convert('L')
+
+    # image_aux
+    # option = st.sidebar.selectbox(
+    #     'Qual o nível de cores?',
+    #     (2, 4, 8, 16, 32, 64, 128, 192, 256),
+    # )
+
+    # image_aux = np.copy(image_gray_corr)
+    # if option == 2:
+    #     image_aux[image_aux > 127] = 255
+    #     image_aux[image_aux < 127] = 0
+    # elif option == 4:
+    #     image_aux[image_aux > 191] = 192
+    #     image_aux[(image_aux > 127) & (image_aux < 192)] = 128
+    #     image_aux[(image_aux > 63) & (image_aux < 128)] = 64
+    #     image_aux[image_aux < 64] = 0
+    # elif option == 8:
+    #     image_aux[image_aux > 223] = 255
+    #     image_aux[(image_aux > 191) & (image_aux < 224)] = 192
+    #     image_aux[(image_aux > 159) & (image_aux < 192)] = 160
+    #     image_aux[(image_aux > 127) & (image_aux < 160)] = 128
+    #     image_aux[(image_aux > 95) & (image_aux < 128)] = 96
+    #     image_aux[(image_aux > 63) & (image_aux < 96)] = 64
+    #     image_aux[(image_aux > 31) & (image_aux < 64)] = 32
+    #     image_aux[image_aux < 32] = 0
 
     st.image(image_aux)    
     
