@@ -104,9 +104,29 @@ if uploaded_file is not None:
     # image_aux_arr.astype(int)
     # st.write(image_aux_arr.astype)
     st.image(image_aux)
+    image_aux
+    option = st.sidebar.selectbox(
+        'Qual o nível de cores?',
+        (2, 4, 8, 16, 32, 64, 128, 192, 256),
+    )
 
+    image_aux = np.copy(image_gray_corr)
 
-    # elif(option == 'Transformação em (log)'):
+    def canalCores(canal, imagem_valor):
+        valor_cor = (256 / canal)
+        print(valor_cor)
+        print(f'color: {canal}')
+        for i in range(canal):
+            if i == 0:
+                imagem_valor[imagem_valor <= valor_cor] = 0
+            elif i == canal - 1:
+                imagem_valor[imagem_valor >= (valor_cor * i)] = 255
+            else:
+                imagem_valor[(imagem_valor > ((i * valor_cor) - 1)) & (imagem_valor < ((i + 1) * valor_cor))] = valor_cor * i
+
+    canalCores(option, image_aux)
+
+    # else(option == 'Transformação em (log)'):
         
     #     c = st.sidebar.slider('c', 0, 130, 25)
     #     if color == 'tons de cinza':
@@ -144,5 +164,5 @@ if uploaded_file is not None:
     #     image_aux[(image_aux > 31) & (image_aux < 64)] = 32
     #     image_aux[image_aux < 32] = 0
 
-    # st.image(image_aux)    
+    st.image(image_aux)    
     
